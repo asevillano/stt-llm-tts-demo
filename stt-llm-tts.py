@@ -47,25 +47,6 @@ tts_client = AzureOpenAI(azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT_TTS"),
                          api_key=os.getenv("AZURE_OPENAI_API_KEY_TTS"),
                          api_version=os.getenv("AZURE_OPENAI_API_VERSION_TTS"))
 
-# Function to call the RAG API
-def call_rag(question):
-    url = "https://answergen.azurewebsites.net/api/answergen"
-    params = {
-        "code": "P9DP4SiEWK_dLf5Q6GyDfr-YwdQDSIOtWBaFZFrmy6unAzFuOo2zWQ=="
-    }
-    headers = {
-        "Content-Type": "application/json"
-    }
-    data = {
-        "question": question,
-        "index": "rag-index-docs",
-        "verbose": "no"
-    }
-    print(f"\nCalling RAG API with question: {question}")
-    response = requests.post(url, params=params, headers=headers, json=data)
-    print("Status Code:", response.status_code)
-    print("Response:", response.json())
-
 # Function to call to AOAI
 # Send a call to the model deployed on Azure OpenAI
 def call_aoai(aoai_client, aoai_model_name, system_prompt, user_prompt, temperature, max_tokens):
@@ -147,7 +128,6 @@ def on_message(ws, message):
                 print(transcript_piece, end=' ', flush=True)
         if event_type == "conversation.item.input_audio_transcription.completed":
             print(f"\n>> {data["transcript"]}\n")
-            #call_rag(data["transcript"])
             print("Calling AOAI...")
             answer = call_aoai(aoai_client, AOAI_DEPLOYMENT_NAME, "You are a helpful assistant.", data["transcript"], 0.7, 1000)
             print("Response from AOAI:", answer)
